@@ -1,6 +1,7 @@
 #include QMK_KEYBOARD_H
 #include "version.h"
 #include "sm_td.h"
+#include "secret.h"
 #define MOON_LED_LEVEL LED_LEVEL
 #ifndef ZSA_SAFE_RANGE
 #define ZSA_SAFE_RANGE SAFE_RANGE
@@ -11,13 +12,13 @@ enum custom_keycodes {
   HSV_0_245_245,
   HSV_74_255_206,
   HSV_152_255_255,
+  TYP_SECRT,
 };
 
 #define SYMBOL_LAYER 1
 #define MOUSE_LAYER 2
 #define NUMBER_LAYER 3
-
-
+#define HOTKEYS_LAYER 4
 
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
@@ -34,10 +35,10 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     KC_LEFT_SHIFT, MT(MOD_LALT, KC_SCLN), MT(MOD_LGUI, KC_Q), KC_J, KC_K, KC_X,
     KC_B, KC_M, KC_W, MT(MOD_RGUI, KC_V), MT(MOD_RALT, KC_Z), KC_RIGHT_SHIFT,
 
-    LT(SYMBOL_LAYER, KC_GRAVE), MO(SYMBOL_LAYER), KC_TRANSPARENT, KC_MEH, MO(NUMBER_LAYER), LGUI(KC_SPACE),
-    MT(MOD_LCTL, KC_ESCAPE), MO(MOUSE_LAYER), KC_DOWN, KC_UP, KC_RIGHT, MO(SYMBOL_LAYER),
+    LT(SYMBOL_LAYER, KC_GRAVE), MO(SYMBOL_LAYER), KC_MEH, MO(SYMBOL_LAYER), MO(NUMBER_LAYER), LGUI(KC_SPACE),
+    MT(MOD_LCTL, KC_ESCAPE), MO(MOUSE_LAYER), MO(HOTKEYS_LAYER), KC_UP, MO(HOTKEYS_LAYER), MO(SYMBOL_LAYER),
 
-    KC_SPACE, KC_HYPR, MO(SYMBOL_LAYER),
+    KC_SPACE, KC_HYPR, KC_MEH,
     KC_LEFT_ALT, KC_TAB, KC_ENTER
   ),
   [SYMBOL_LAYER] = LAYOUT_moonlander(
@@ -97,6 +98,25 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT,
     KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT
   ),
+  [HOTKEYS_LAYER] = LAYOUT_moonlander(
+    LSFT(LALT(KC_GRAVE)), LSFT(LALT(KC_1)), LSFT(LALT(KC_2)), LSFT(LALT(KC_3)), LSFT(LALT(KC_4)), LSFT(LALT(KC_5)), LSFT(LALT(KC_LEFT)),
+    LSFT(LALT(KC_RIGHT)), LSFT(LALT(KC_6)), LSFT(LALT(KC_7)), LSFT(LALT(KC_8)), LSFT(LALT(KC_9)), LSFT(LALT(KC_0)), LSFT(LALT(KC_DEL)),
+
+    LSFT(LALT(KC_TAB)), LSFT(LALT(KC_QUOTE)), LSFT(LALT(KC_COMMA)), LSFT(LALT(KC_DOT)), LSFT(LALT(KC_P)), LSFT(LALT(KC_Y)), LSFT(LALT(KC_MS_BTN2)),
+    KC_TRANSPARENT, LSFT(LALT(KC_F)), LSFT(LALT(KC_G)), LSFT(LALT(KC_C)), LSFT(LALT(KC_R)), LSFT(LALT(KC_L)), LSFT(LALT(KC_BSPC)),
+
+    KC_TRANSPARENT, LSFT(LALT(KC_A)), LSFT(LALT(KC_O)), LSFT(LALT(KC_E)), LSFT(LALT(KC_U)), LSFT(LALT(KC_I)), LSFT(LALT(KC_MS_BTN1)),
+    KC_TRANSPARENT, LSFT(LALT(KC_D)), LSFT(LALT(KC_H)), LSFT(LALT(KC_T)), LSFT(LALT(KC_N)), LSFT(LALT(KC_S)), LSFT(LALT(KC_ENTER)),
+
+    KC_TRANSPARENT, LSFT(LALT(KC_SCLN)), LSFT(LALT(KC_Q)), LSFT(LALT(KC_J)), LSFT(LALT(KC_K)), LSFT(LALT(KC_X)),
+    LSFT(LALT(KC_B)), LSFT(LALT(KC_M)), LSFT(LALT(KC_W)), LSFT(LALT(KC_V)), LSFT(LALT(KC_Z)), KC_TRANSPARENT,
+
+    KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, LSFT(LALT(KC_SPACE)),
+    KC_TRANSPARENT, KC_TRANSPARENT, LSFT(LALT(KC_DOWN)), LSFT(LALT(KC_UP)), TYP_SECRT, KC_TRANSPARENT,
+
+    LSFT(LALT(KC_SPACE)), KC_TRANSPARENT, KC_TRANSPARENT,
+    KC_TRANSPARENT, LSFT(LALT(KC_TAB)), LSFT(LALT(KC_ENTER))
+  )
 };
 
 #ifdef COMBO_ENABLE
@@ -199,14 +219,19 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         }
         return false;
     case HSV_152_255_255:
-        if (rawhid_state.rgb_control) {
+            if (rawhid_state.rgb_control) {
             return false;
-        }
-        if (record->event.pressed) {
-            rgblight_mode(1);
-            rgblight_sethsv(152,255,255);
-        }
-        return false;
-  }
+            }
+            if (record->event.pressed) {
+                rgblight_mode(1);
+                rgblight_sethsv(152,255,255);
+            }
+            return false;
+    case TYP_SECRT:
+            if (record->event.pressed) {
+                SEND_STRING(SECRET_STRING);
+            }
+            return false;
+    }
   return true;
 }
