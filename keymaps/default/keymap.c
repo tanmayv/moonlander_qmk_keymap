@@ -12,7 +12,8 @@ enum custom_keycodes {
   HSV_0_245_245,
   HSV_74_255_206,
   HSV_152_255_255,
-  TYP_SECRT,
+  TYP_SECRT_1,
+  TYP_SECRT_2,
 };
 
 #define SYMBOL_LAYER 1
@@ -112,7 +113,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     LSFT(LALT(KC_B)), LSFT(LALT(KC_M)), LSFT(LALT(KC_W)), LSFT(LALT(KC_V)), LSFT(LALT(KC_Z)), KC_TRANSPARENT,
 
     KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, LSFT(LALT(KC_SPACE)),
-    KC_TRANSPARENT, KC_TRANSPARENT, LSFT(LALT(KC_DOWN)), LSFT(LALT(KC_UP)), TYP_SECRT, KC_TRANSPARENT,
+    KC_TRANSPARENT, KC_TRANSPARENT, LSFT(LALT(KC_DOWN)), LSFT(LALT(KC_UP)), TYP_SECRT_1, TYP_SECRT_2,
 
     LSFT(LALT(KC_SPACE)), KC_TRANSPARENT, KC_TRANSPARENT,
     KC_TRANSPARENT, LSFT(LALT(KC_TAB)), LSFT(LALT(KC_ENTER))
@@ -227,9 +228,14 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 rgblight_sethsv(152,255,255);
             }
             return false;
-    case TYP_SECRT:
+    case TYP_SECRT_1:
             if (record->event.pressed) {
-                SEND_STRING(SECRET_STRING);
+                SEND_STRING(SECRET_STRING_1);
+            }
+            return false;
+    case TYP_SECRT_2:
+            if (record->event.pressed) {
+                SEND_STRING(SECRET_STRING_2);
             }
             return false;
     }
