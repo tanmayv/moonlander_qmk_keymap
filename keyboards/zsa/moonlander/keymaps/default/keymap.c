@@ -2,10 +2,22 @@
 #include "version.h"
 #include "sm_td.h"
 #include "secret.h"
+
 #define MOON_LED_LEVEL LED_LEVEL
 #ifndef ZSA_SAFE_RANGE
 #    define ZSA_SAFE_RANGE SAFE_RANGE
 #endif
+
+enum layers {
+    BASE,
+    NAV_LAYER,
+    MOUSE_LAYER,
+    SYMBOL_LAYER,
+    NUMBER_LAYER,
+    FUNCTION_LAYER,
+    MAGIC_LAYER,
+    QWERTY_LAYER,
+};
 
 enum custom_keycodes {
     RGB_SLD = ZSA_SAFE_RANGE,
@@ -14,68 +26,96 @@ enum custom_keycodes {
     HSV_152_255_255,
     TYP_SECRT_1,
     TYP_SECRT_2,
+    MAGIC_TG,   // tap = toggle Dvorak/QWERTY, hold = Magic layer
 };
 
-#define SYMBOL_LAYER 1
-#define MOUSE_LAYER 2
-#define NUMBER_LAYER 3
-#define HOTKEYS_LAYER 4
+#define A_HRM LSFT_T(KC_A)
+#define O_HRM LCTL_T(KC_O)
+#define E_HRM LGUI_T(KC_E)
+#define U_HRM LALT_T(KC_U)
+#define H_HRM RALT_T(KC_H)
+#define T_HRM RGUI_T(KC_T)
+#define N_HRM RCTL_T(KC_N)
+#define S_HRM RSFT_T(KC_S)
 
-const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {[0]             = LAYOUT_moonlander(KC_GRAVE, HYPR(KC_1), HYPR(KC_2), HYPR(KC_3), HYPR(KC_4), HYPR(KC_5), KC_LEFT, KC_RIGHT, HYPR(KC_6), KC_MEDIA_PREV_TRACK, KC_MEDIA_PLAY_PAUSE, KC_MEDIA_NEXT_TRACK, HYPR(KC_0), KC_DEL,
+#define MEH_LSFT(kc) LSFT(LALT(kc))
+#define HYPER(kc) HYPR(kc)
 
-                                                                                                  KC_TAB, KC_QUOTE, KC_COMMA, KC_DOT, KC_P, KC_Y, KC_MS_BTN2, TG(SYMBOL_LAYER), KC_F, KC_G, KC_C, KC_R, KC_L, KC_BSPC,
+// clang-format off
+const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
+    [BASE] = LAYOUT_moonlander(
+        KC_CAPS, KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,   KC_NO,           KC_NO, KC_F6,   KC_F7,                 KC_F8,                 KC_F9,                 KC_F10,                KC_EQL,
+        KC_TAB,  KC_QUOT, KC_COMM, KC_DOT,  KC_P,    KC_Y,    KC_NO,           KC_NO, KC_F,    KC_G,                  KC_C,                  KC_R,                  KC_L,                  KC_PLUS,
+        KC_GRV,  A_HRM,   O_HRM,   E_HRM,   U_HRM,   KC_I,    KC_NO,           KC_NO, KC_D,    H_HRM,                 T_HRM,                 N_HRM,                 S_HRM,                 KC_MINS,
+        MAGIC_TG, KC_SCLN, KC_Q,     KC_J,    KC_K,    KC_X,                              KC_B,    KC_M,                  KC_W,                  KC_V,                  KC_Z,                  KC_UNDS,
+        KC_NO,   KC_NO,   KC_NO,   TO(BASE), KC_DOWN, KC_UP,                    LT(SYMBOL_LAYER, KC_END), LT(NAV_LAYER, KC_ENT), KC_BSPC, KC_NO, KC_NO, KC_NO,
+                                            LT(NUMBER_LAYER, KC_SPC), LT(MOUSE_LAYER, KC_HOME), LGUI(KC_SPC),   KC_NO, KC_NO, KC_NO
+    ),
 
-                                                                                                  KC_LCTL, KC_A, KC_O, KC_E, KC_U, KC_I, KC_MS_BTN1, KC_MEH, KC_D, KC_H, KC_T, KC_N, LT(MOUSE_LAYER, KC_S), KC_ENTER,
+    [NAV_LAYER] = LAYOUT_moonlander(
+        MEH_LSFT(KC_MINS), MEH_LSFT(KC_B), MEH_LSFT(KC_F), MEH_LSFT(KC_SLSH), MEH_LSFT(KC_EQL), KC_NO, KC_NO,           KC_NO, LALT(KC_BSPC), KC_NO,          KC_NO,          MEH_LSFT(KC_G), MEH_LSFT(KC_C), KC_NO,
+        KC_NO,             MS_WHLL,        MS_WHLD,        MS_WHLU,           MS_WHLR,         KC_NO, KC_NO,           KC_NO, MEH_LSFT(KC_M), LCTL(LSFT(KC_TAB)), KC_UP,     LCTL(KC_TAB),  MEH_LSFT(KC_L), MEH_LSFT(KC_R),
+        KC_APP,            LALT(KC_LEFT),  LALT(KC_DOWN),  LALT(KC_UP),       LALT(KC_RGHT),   LALT(KC_I), KC_NO,      KC_NO, KC_NO,          KC_LEFT,        KC_DOWN,        KC_RGHT,        KC_NO,          KC_APP,
+        KC_NO,             KC_NO,          KC_NO,          KC_NO,             KC_NO,           KC_NO,                                    KC_NO,          KC_NO,          KC_NO,          KC_NO,          KC_NO,          KC_NO,
+        KC_NO,             KC_NO,          KC_NO,          TO(BASE),          KC_PGDN,         KC_PGUP,                 KC_TRNS,        KC_TAB,         KC_DEL,         KC_NO,          KC_NO,          KC_NO,
+                                                                                        KC_LSFT, KC_NO, KC_NO,       KC_NO, KC_NO, KC_NO
+    ),
 
-                                                                                                  KC_LEFT_SHIFT, MT(MOD_LALT, KC_SCLN), MT(MOD_LGUI, KC_Q), KC_J, KC_K, KC_X, KC_B, KC_M, KC_W, MT(MOD_RGUI, KC_V), MT(MOD_RALT, KC_Z), KC_RIGHT_SHIFT,
+    [MOUSE_LAYER] = LAYOUT_moonlander(
+        KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,           KC_NO, KC_NO,        KC_NO,        KC_NO,        KC_NO,        KC_NO,        QK_BOOT,
+        KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,           KC_NO, LGUI(LSFT(KC_Z)), LGUI(KC_V), LGUI(KC_C), LGUI(KC_X), LGUI(KC_Z),    KC_NO,
+        KC_NO,   KC_LGUI, KC_LALT, KC_MS_BTN2, KC_MS_BTN1, KC_MS_BTN3, KC_NO,     KC_NO, KC_MS_BTN1,   KC_MS_BTN1,   KC_MS_BTN3,   KC_MS_BTN2,   KC_NO,        KC_NO,
+        KC_NO,   KC_NO,   MS_WHLL, MS_WHLD, MS_WHLU, MS_WHLR,                                   MS_WHLR,      MS_WHLU,      MS_WHLD,      MS_WHLL,      KC_NO,        KC_NO,
+        KC_NO,   KC_NO,   KC_NO,   TO(BASE),KC_NO,   KC_NO,                    KC_TRNS,       KC_NO,        KC_TRNS,       KC_NO,        KC_NO,        KC_NO,
+                                            KC_NO,   KC_NO,   KC_NO,           KC_NO, KC_NO, KC_NO
+    ),
 
-                                                                                                  LT(SYMBOL_LAYER, KC_GRAVE), MO(SYMBOL_LAYER), KC_MEH, KC_HYPR, MO(NUMBER_LAYER), LGUI(KC_SPACE), MT(MOD_LCTL, KC_ESCAPE), MO(MOUSE_LAYER), MO(HOTKEYS_LAYER), KC_UP, MO(HOTKEYS_LAYER), MO(SYMBOL_LAYER),
+    [SYMBOL_LAYER] = LAYOUT_moonlander(
+        KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,           KC_NO, KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,
+        KC_NO,   KC_LCBR, KC_AMPR, KC_ASTR, KC_LPRN, KC_RCBR, KC_NO,           KC_NO, KC_NO,   KC_NO,   KC_NO,   KC_RALT, KC_NO,   KC_NO,
+        KC_NO,   KC_COLN, KC_DLR,  KC_PERC, KC_CIRC, KC_PLUS, KC_NO,           KC_NO, KC_NO,   KC_RALT, KC_RGUI, KC_RCTL, KC_RSFT, KC_NO,
+        KC_NO,   KC_TILD, KC_EXLM, KC_AT,   KC_HASH, KC_PIPE,                                  KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,
+        KC_NO,   KC_NO,   KC_NO,   TO(BASE),KC_NO,   KC_NO,                    KC_NO,   KC_TRNS, KC_NO, KC_NO, KC_NO, KC_NO,
+                                            KC_LPRN, KC_RPRN, KC_UNDS,         KC_NO, KC_NO, KC_NO
+    ),
 
-                                                                                                  KC_SPACE, MO(SYMBOL_LAYER), KC_MEH, KC_LEFT_ALT, KC_TAB, KC_ENTER),
-                                                              [SYMBOL_LAYER]  = LAYOUT_moonlander(KC_ESCAPE, KC_F1, KC_F2, KC_F3, KC_F4, KC_F5, KC_TRANSPARENT, KC_TRANSPARENT, KC_F6, KC_F7, KC_F8, KC_F9, KC_F10, KC_F11,
+    [NUMBER_LAYER] = LAYOUT_moonlander(
+        KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,           KC_NO, KC_MUTE, KC_MPRV, KC_MPLY, KC_MNXT, KC_VOLD, KC_VOLU,
+        KC_NO,   KC_EXLM, KC_AT,   KC_HASH, KC_DLR,  KC_PERC, KC_NO,           KC_NO, KC_DOT,  KC_7,    KC_8,    KC_9,    KC_PLUS, KC_NO,
+        KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,           KC_NO, KC_0,    KC_4,    KC_5,    KC_6,    KC_MINS, KC_NO,
+        KC_NO,   KC_CIRC, KC_AMPR, KC_ASTR, KC_LPRN, KC_RPRN,                                  KC_DOT,  KC_1,    KC_2,    KC_3,    KC_UNDS, KC_NO,
+        KC_NO,   KC_NO,   KC_NO,   TO(BASE),KC_NO,   KC_NO,                    KC_NO,   KC_NO, KC_NO, KC_NO, KC_NO, KC_NO,
+                                            KC_TRNS, KC_NO,   KC_NO,           KC_NO, KC_NO, KC_NO
+    ),
 
-                                                                                                  KC_TRANSPARENT, KC_EXLM, LGUI(KC_X), LGUI(KC_C), LGUI(KC_V), KC_PIPE, KC_TRANSPARENT, KC_TRANSPARENT, KC_UP, KC_7, KC_8, KC_9, KC_ASTR, KC_F12,
+    [FUNCTION_LAYER] = LAYOUT_moonlander(
+        KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,           KC_NO, KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,
+        KC_NO,   KC_F12,  KC_F7,   KC_F8,   KC_F9,   KC_PSCR, KC_NO,           KC_NO, KC_NO,   KC_NO,   KC_NO,   KC_RALT, KC_NO,   KC_NO,
+        KC_NO,   KC_F11,  KC_F4,   KC_F5,   KC_F6,   KC_SCRL, KC_NO,           KC_NO, KC_NO,   KC_RALT, KC_RGUI, KC_RCTL, KC_RSFT, KC_NO,
+        KC_NO,   KC_F10,  KC_F1,   KC_F2,   KC_F3,   KC_MPLY,                                  KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,
+        KC_NO,   KC_NO,   KC_NO,   TO(BASE),KC_NO,   KC_NO,                    KC_NO,   KC_NO, KC_NO, KC_NO, KC_NO, KC_NO,
+                                            KC_APP,  KC_BSPC, KC_DEL,          KC_NO, KC_NO, KC_NO
+    ),
 
-                                                                                                  KC_TRANSPARENT, KC_HASH, MS_WHLR, KC_MS_BTN2, KC_MS_BTN1, MS_WHLL, KC_TRANSPARENT, KC_TRANSPARENT, KC_0, KC_4, KC_5, KC_6, KC_KP_PLUS, KC_TRANSPARENT,
+    [MAGIC_LAYER] = LAYOUT_moonlander(
+        QK_BOOT, KC_BRID, KC_BRIU, KC_MPRV, KC_MNXT, KC_MPLY, KC_NO,           KC_NO, KC_MUTE, KC_VOLD, KC_VOLU, KC_NO,   KC_NO,   QK_BOOT,
+        QK_BOOT, RGB_SPI, RGB_SAI, RGB_HUI, RGB_VAI, RGB_TOG, KC_NO,           KC_NO, KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   QK_BOOT,
+        EE_CLR,  RGB_SPD, RGB_SAD, RGB_HUD, RGB_VAD, RGB_MOD, KC_NO,           KC_NO, KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   EE_CLR,
+        KC_TRNS, KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,                                    KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   TO(QWERTY_LAYER),
+        KC_NO,   KC_NO,   KC_NO,   TO(BASE),KC_NO,   KC_NO,                    KC_NO,   KC_NO, KC_NO, KC_NO, KC_NO, KC_NO,
+                                            HSV_0_245_245, HSV_74_255_206, HSV_152_255_255, KC_NO, KC_NO, KC_NO
+    ),
 
-                                                                                                  KC_TRANSPARENT, KC_TRANSPARENT, KC_CIRC, MS_WHLU, MS_WHLD, KC_TILD, KC_AMPR, KC_1, KC_2, KC_3, KC_BSLS, KC_TRANSPARENT,
-
-                                                                                                  KC_TRANSPARENT, KC_COMMA, HSV_0_245_245, HSV_74_255_206, HSV_152_255_255, RGB_MODE_FORWARD, RGB_TOG, KC_TRANSPARENT, KC_DOT, KC_0, KC_EQUAL, KC_TRANSPARENT,
-
-                                                                                                  RGB_VAD, RGB_VAI, TOGGLE_LAYER_COLOR, RGB_SLD, RGB_HUD, RGB_HUI),
-                                                              [MOUSE_LAYER]   = LAYOUT_moonlander(AU_TOGG, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, QK_BOOT,
-
-                                                                                                  MU_TOGG, KC_TRANSPARENT, KC_TRANSPARENT, KC_MS_UP, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT,
-
-                                                                                                  MU_NEXT, KC_TRANSPARENT, KC_MS_LEFT, KC_MS_DOWN, KC_MS_RIGHT, KC_TRANSPARENT, KC_TRANSPARENT, KC_HOME, KC_LEFT, KC_DOWN, KC_UP, KC_RIGHT, KC_END, KC_MEDIA_PLAY_PAUSE,
-
-                                                                                                  KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_MEDIA_PREV_TRACK, KC_MEDIA_NEXT_TRACK, KC_TRANSPARENT, KC_TRANSPARENT,
-
-                                                                                                  KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_MS_BTN1, KC_MS_BTN2, KC_TRANSPARENT, KC_TRANSPARENT, KC_AUDIO_VOL_UP, KC_AUDIO_VOL_DOWN, KC_AUDIO_MUTE, KC_TRANSPARENT, KC_TRANSPARENT,
-
-                                                                                                  KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_WWW_BACK),
-                                                              [NUMBER_LAYER]  = LAYOUT_moonlander(KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT,
-
-                                                                                                  KC_TRANSPARENT, KC_EXLM, KC_AT, KC_HASH, KC_DLR, KC_PERC, KC_TRANSPARENT, KC_TRANSPARENT, KC_CIRC, KC_7, KC_8, KC_9, KC_GRAVE, KC_TRANSPARENT,
-
-                                                                                                  KC_TRANSPARENT, KC_PLUS, KC_MINUS, KC_EQUAL, KC_UNDERSCORE, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_0, KC_4, KC_5, KC_6, KC_TILDE, KC_TRANSPARENT,
-
-                                                                                                  KC_TRANSPARENT, KC_TRANSPARENT, KC_QUESTION, KC_PIPE, KC_ASTERISK, KC_AMPERSAND, KC_DOT, KC_1, KC_2, KC_3, KC_TRANSPARENT, KC_TRANSPARENT,
-
-                                                                                                  KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT,
-
-                                                                                                  KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT),
-                                                              [HOTKEYS_LAYER] = LAYOUT_moonlander(LSFT(LALT(KC_GRAVE)), LSFT(LALT(KC_1)), LSFT(LALT(KC_2)), LSFT(LALT(KC_3)), LSFT(LALT(KC_4)), LSFT(LALT(KC_5)), LSFT(LALT(KC_LEFT)), LSFT(LALT(KC_RIGHT)), LSFT(LALT(KC_6)), LSFT(LALT(KC_7)), LSFT(LALT(KC_8)), LSFT(LALT(KC_9)), LSFT(LALT(KC_0)), LSFT(LALT(KC_DEL)),
-
-                                                                                                  LSFT(LALT(KC_TAB)), LSFT(LALT(KC_QUOTE)), LSFT(LALT(KC_COMMA)), LSFT(LALT(KC_DOT)), LSFT(LALT(KC_P)), LSFT(LALT(KC_Y)), LSFT(LALT(KC_MS_BTN2)), KC_TRANSPARENT, LSFT(LALT(KC_F)), LSFT(LALT(KC_G)), LSFT(LALT(KC_C)), LSFT(LALT(KC_R)), LSFT(LALT(KC_L)), LSFT(LALT(KC_BSPC)),
-
-                                                                                                  KC_TRANSPARENT, LSFT(LALT(KC_A)), LSFT(LALT(KC_O)), LSFT(LALT(KC_E)), LSFT(LALT(KC_U)), LSFT(LALT(KC_I)), LSFT(LALT(KC_MS_BTN1)), KC_TRANSPARENT, LSFT(LALT(KC_D)), LSFT(LALT(KC_H)), LSFT(LALT(KC_T)), LSFT(LALT(KC_N)), LSFT(LALT(KC_S)), LSFT(LALT(KC_ENTER)),
-
-                                                                                                  KC_TRANSPARENT, LSFT(LALT(KC_SCLN)), LSFT(LALT(KC_Q)), LSFT(LALT(KC_J)), LSFT(LALT(KC_K)), LSFT(LALT(KC_X)), LSFT(LALT(KC_B)), LSFT(LALT(KC_M)), LSFT(LALT(KC_W)), LSFT(LALT(KC_V)), LSFT(LALT(KC_Z)), KC_TRANSPARENT,
-
-                                                                                                  KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, LSFT(LALT(KC_SPACE)), KC_TRANSPARENT, KC_TRANSPARENT, LSFT(LALT(KC_DOWN)), LSFT(LALT(KC_UP)), TYP_SECRT_1, TYP_SECRT_2,
-
-                                                                                                  LSFT(LALT(KC_SPACE)), KC_TRANSPARENT, KC_TRANSPARENT, KC_TRANSPARENT, LSFT(LALT(KC_TAB)), LSFT(LALT(KC_ENTER)))};
+    [QWERTY_LAYER] = LAYOUT_moonlander(
+        KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_NO,           KC_NO, KC_TRNS, KC_TRNS,              KC_TRNS,              KC_TRNS,              KC_TRNS,              KC_EQL,
+        KC_TRNS, KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,    KC_NO,           KC_NO, KC_Y,    KC_U,                 KC_I,                 KC_O,                 KC_P,                 KC_PLUS,
+        KC_TRNS, A_HRM,   LCTL_T(KC_S), LGUI_T(KC_D), LALT_T(KC_F), KC_G, KC_NO, KC_NO, KC_H, RALT_T(KC_J), RGUI_T(KC_K), RCTL_T(KC_L), RSFT_T(KC_SCLN), KC_MINS,
+        KC_TRNS, KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,                                      KC_N,    KC_M,                 KC_COMM,              KC_DOT,               KC_SLSH,              KC_UNDS,
+        KC_NO,   KC_NO,   KC_NO,   TO(BASE),KC_TRNS, KC_TRNS,                 KC_TRNS, KC_TRNS, KC_TRNS, KC_NO, KC_NO, KC_NO,
+                                            KC_TRNS, KC_TRNS, KC_TRNS,         KC_NO, KC_NO, KC_NO
+    ),
+};
+// clang-format on
 
 #ifdef COMBO_ENABLE
 enum combo_events {
@@ -87,46 +127,61 @@ enum combo_events {
     GC_RBRC,
     UI_LPRN,
     DH_RPRN,
-    KX_LCBR,
-    BM_RCBR,
+    JK_LCBR,
+    MW_RCBR,
 };
 
-const uint16_t PROGMEM eu_combo[]   = {KC_E, KC_U, COMBO_END};
-const uint16_t PROGMEM ht_combo[]   = {KC_H, KC_T, COMBO_END};
-const uint16_t PROGMEM hc_combo[]   = {KC_H, KC_C, COMBO_END};
-const uint16_t PROGMEM dotu_combo[] = {KC_DOT, KC_U, COMBO_END};
+const uint16_t PROGMEM eu_combo[]   = {E_HRM, U_HRM, COMBO_END};
+const uint16_t PROGMEM ht_combo[]   = {H_HRM, T_HRM, COMBO_END};
+const uint16_t PROGMEM hc_combo[]   = {H_HRM, KC_C, COMBO_END};
+const uint16_t PROGMEM dotu_combo[] = {KC_DOT, U_HRM, COMBO_END};
 const uint16_t PROGMEM dotp_combo[] = {KC_DOT, KC_P, COMBO_END};
 const uint16_t PROGMEM gc_combo[]   = {KC_G, KC_C, COMBO_END};
-const uint16_t PROGMEM ui_combo[]   = {KC_U, KC_I, COMBO_END};
-const uint16_t PROGMEM dh_combo[]   = {KC_D, KC_H, COMBO_END};
-const uint16_t PROGMEM kx_combo[]   = {KC_K, KC_X, COMBO_END};
-const uint16_t PROGMEM bm_combo[]   = {KC_B, KC_M, COMBO_END};
+const uint16_t PROGMEM ui_combo[]   = {U_HRM, KC_I, COMBO_END};
+const uint16_t PROGMEM dh_combo[]   = {KC_D, H_HRM, COMBO_END};
+const uint16_t PROGMEM jk_combo[]   = {KC_J, KC_K, COMBO_END};
+const uint16_t PROGMEM mw_combo[]   = {KC_M, KC_W, COMBO_END};
 
 combo_t key_combos[] = {
-    [EU_ESC] = COMBO(eu_combo, KC_ESCAPE), [HT_BSPC] = COMBO(ht_combo, KC_BSPC), [HC_SLASH] = COMBO(hc_combo, KC_SLASH), [DOTU_BSLASH] = COMBO(dotu_combo, KC_BSLS), [DOTP_LBRC] = COMBO(dotp_combo, KC_LBRC), [GC_RBRC] = COMBO(gc_combo, KC_RBRC), [UI_LPRN] = COMBO(ui_combo, KC_LPRN), [DH_RPRN] = COMBO(dh_combo, KC_RPRN), [KX_LCBR] = COMBO(kx_combo, KC_LCBR), [BM_RCBR] = COMBO(bm_combo, KC_RCBR),
+    [EU_ESC]     = COMBO(eu_combo, KC_ESC),
+    [HT_BSPC]    = COMBO(ht_combo, KC_BSPC),
+    [HC_SLASH]   = COMBO(hc_combo, KC_SLSH),
+    [DOTU_BSLASH]= COMBO(dotu_combo, KC_BSLS),
+    [DOTP_LBRC]  = COMBO(dotp_combo, KC_LBRC),
+    [GC_RBRC]    = COMBO(gc_combo, KC_RBRC),
+    [UI_LPRN]    = COMBO(ui_combo, KC_LPRN),
+    [DH_RPRN]    = COMBO(dh_combo, KC_RPRN),
+    [JK_LCBR]    = COMBO(jk_combo, KC_LCBR),
+    [MW_RCBR]    = COMBO(mw_combo, KC_RCBR),
 };
 #endif
 
 smtd_resolution on_smtd_action(uint16_t keycode, smtd_action action, uint8_t tap_count) {
-    switch (keycode) {
-        SMTD_MT(KC_Q, KC_LEFT_GUI)
-        SMTD_MT(KC_SCLN, KC_LEFT_ALT)
-        SMTD_MT(KC_V, KC_RIGHT_GUI)
-        SMTD_MT(KC_Z, KC_RIGHT_ALT)
-    }
-
     return SMTD_RESOLUTION_UNHANDLED;
 }
 
-bool process_record_user(uint16_t keycode, keyrecord_t *record) {
-    // if (!process_smtd(keycode, record)) {
-    //     return false;
-    // }
+static uint16_t magic_tg_timer = 0;
 
+bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     switch (keycode) {
+        case MAGIC_TG:
+            if (record->event.pressed) {
+                magic_tg_timer = timer_read();
+                layer_on(MAGIC_LAYER);
+            } else {
+                layer_off(MAGIC_LAYER);
+                if (timer_elapsed(magic_tg_timer) < TAPPING_TERM) {
+                    // Tap: toggle between Dvorak (BASE) and QWERTY
+                    if (layer_state_is(QWERTY_LAYER)) {
+                        layer_move(BASE);
+                    } else {
+                        layer_move(QWERTY_LAYER);
+                    }
+                }
+            }
+            return false;
         case QK_MODS ... QK_MODS_MAX:
-            // Mouse keys with modifiers work inconsistently across operating systems, this makes sure that modifiers are always
-            // applied to the mouse key that was pressed.
+            // Mouse keys with modifiers work inconsistently across operating systems; make sure modifiers are applied first.
             if (IS_MOUSE_KEYCODE(QK_MODS_GET_BASIC_KEYCODE(keycode))) {
                 if (record->event.pressed) {
                     add_mods(QK_MODS_GET_MODS(keycode));
@@ -186,6 +241,21 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 SEND_STRING(SECRET_STRING_2);
             }
             return false;
+    }
+    return true;
+}
+
+bool rgb_matrix_indicators_user(void) {
+    if (rawhid_state.rgb_control) {
+        return true;
+    }
+    switch (get_highest_layer(layer_state | default_layer_state)) {
+        case QWERTY_LAYER:
+            // Distinct solid color for QWERTY (orange)
+            rgb_matrix_set_color_all(0xFF, 0x55, 0x00);
+            break;
+        default:
+            break;
     }
     return true;
 }
