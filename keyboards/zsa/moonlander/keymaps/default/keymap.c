@@ -27,6 +27,9 @@ enum custom_keycodes {
     TYP_SECRT_1,
     TYP_SECRT_2,
     MAGIC_TG,   // tap = toggle Dvorak/QWERTY, hold = Magic layer
+    BRWSR_BK,   // browser back  (OS-aware)
+    BRWSR_FW,   // browser forward (OS-aware)
+    HYPR_SPC,   // tap = Gui+Space, hold = Hyper
 };
 
 #define A_HRM LSFT_T(KC_A)
@@ -47,9 +50,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         KC_CAPS, KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,   KC_NO,           KC_NO, KC_F6,   KC_F7,                 KC_F8,                 KC_F9,                 KC_F10,                KC_EQL,
         KC_TAB,  KC_QUOT, KC_COMM, KC_DOT,  KC_P,    KC_Y,    KC_NO,           KC_NO, KC_F,    KC_G,                  KC_C,                  KC_R,                  KC_L,                  KC_PLUS,
         KC_GRV,  A_HRM,   O_HRM,   E_HRM,   U_HRM,   KC_I,    KC_NO,           KC_NO, KC_D,    H_HRM,                 T_HRM,                 N_HRM,                 S_HRM,                 KC_MINS,
-        MAGIC_TG, KC_SCLN, KC_Q,     KC_J,    KC_K,    KC_X,                              KC_B,    KC_M,                  KC_W,                  KC_V,                  KC_Z,                  KC_UNDS,
-        KC_NO,   KC_NO,   KC_NO,   TO(BASE), KC_DOWN, KC_UP,                    LT(SYMBOL_LAYER, KC_END), LT(NAV_LAYER, KC_ENT), KC_BSPC, KC_NO, KC_NO, KC_NO,
-                                            LT(NUMBER_LAYER, KC_SPC), LT(MOUSE_LAYER, KC_HOME), LGUI(KC_SPC),   KC_NO, KC_NO, KC_NO
+        KC_NO,   KC_SCLN, KC_Q,     KC_J,    KC_K,    KC_X,                              KC_B,    KC_M,                  KC_W,                  KC_V,                  KC_Z,                  KC_UNDS,
+        MAGIC_TG,   KC_NO,   KC_NO,   TO(BASE), LT(NUMBER_LAYER, KC_SPC), KC_UP,                    LT(SYMBOL_LAYER, KC_END), LT(NAV_LAYER, KC_ENT), KC_BSPC, KC_NO, KC_NO, KC_NO,
+                                            LT(NUMBER_LAYER, KC_SPC), LT(MOUSE_LAYER, KC_HOME), HYPR_SPC,   KC_NO, KC_NO, KC_NO
     ),
 
     [NAV_LAYER] = LAYOUT_moonlander(
@@ -63,9 +66,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
     [MOUSE_LAYER] = LAYOUT_moonlander(
         KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,           KC_NO, KC_NO,        KC_NO,        KC_NO,        KC_NO,        KC_NO,        QK_BOOT,
-        KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,           KC_NO, LGUI(LSFT(KC_Z)), LGUI(KC_V), LGUI(KC_C), LGUI(KC_X), LGUI(KC_Z),    KC_NO,
+        KC_NO,   KC_NO,   KC_NO,   BRWSR_BK, BRWSR_FW, KC_NO, KC_NO,           KC_NO, LGUI(LSFT(KC_Z)), LGUI(KC_V), LGUI(KC_C), LGUI(KC_X), LGUI(KC_Z),    KC_NO,
         KC_NO,   KC_LGUI, KC_LALT, KC_MS_BTN2, KC_MS_BTN1, KC_MS_BTN3, KC_NO,     KC_NO, KC_MS_BTN1,   KC_MS_BTN1,   KC_MS_BTN3,   KC_MS_BTN2,   KC_NO,        KC_NO,
-        KC_NO,   KC_NO,   MS_WHLL, MS_WHLD, MS_WHLU, MS_WHLR,                                   MS_WHLR,      MS_WHLU,      MS_WHLD,      MS_WHLL,      KC_NO,        KC_NO,
+        KC_NO,   KC_NO,   MS_WHLL, MS_WHLU, MS_WHLD, MS_WHLR,                                   MS_WHLR,      MS_WHLD,      MS_WHLU,      MS_WHLL,      KC_NO,        KC_NO,
         KC_NO,   KC_NO,   KC_NO,   TO(BASE),KC_NO,   KC_NO,                    KC_TRNS,       KC_NO,        KC_TRNS,       KC_NO,        KC_NO,        KC_NO,
                                             KC_NO,   KC_NO,   KC_NO,           KC_NO, KC_NO, KC_NO
     ),
@@ -82,7 +85,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [NUMBER_LAYER] = LAYOUT_moonlander(
         KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,           KC_NO, KC_MUTE, KC_MPRV, KC_MPLY, KC_MNXT, KC_VOLD, KC_VOLU,
         KC_NO,   KC_EXLM, KC_AT,   KC_HASH, KC_DLR,  KC_PERC, KC_NO,           KC_NO, KC_DOT,  KC_7,    KC_8,    KC_9,    KC_PLUS, KC_NO,
-        KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,           KC_NO, KC_0,    KC_4,    KC_5,    KC_6,    KC_MINS, KC_NO,
+        KC_NO,   KC_PLUS, KC_MINS, KC_EQL,  KC_UNDS, KC_NO,   KC_NO,           KC_NO, KC_0,    KC_4,    KC_5,    KC_6,    KC_MINS, KC_NO,
         KC_NO,   KC_CIRC, KC_AMPR, KC_ASTR, KC_LPRN, KC_RPRN,                                  KC_DOT,  KC_1,    KC_2,    KC_3,    KC_UNDS, KC_NO,
         KC_NO,   KC_NO,   KC_NO,   TO(BASE),KC_NO,   KC_NO,                    KC_NO,   KC_NO, KC_NO, KC_NO, KC_NO, KC_NO,
                                             KC_TRNS, KC_NO,   KC_NO,           KC_NO, KC_NO, KC_NO
@@ -129,6 +132,7 @@ enum combo_events {
     DH_RPRN,
     JK_LCBR,
     MW_RCBR,
+    EUHT_CAPS,
 };
 
 const uint16_t PROGMEM eu_combo[]   = {E_HRM, U_HRM, COMBO_END};
@@ -141,6 +145,7 @@ const uint16_t PROGMEM ui_combo[]   = {U_HRM, KC_I, COMBO_END};
 const uint16_t PROGMEM dh_combo[]   = {KC_D, H_HRM, COMBO_END};
 const uint16_t PROGMEM jk_combo[]   = {KC_J, KC_K, COMBO_END};
 const uint16_t PROGMEM mw_combo[]   = {KC_M, KC_W, COMBO_END};
+const uint16_t PROGMEM euht_combo[] = {E_HRM, U_HRM, H_HRM, T_HRM, COMBO_END};
 
 combo_t key_combos[] = {
     [EU_ESC]     = COMBO(eu_combo, KC_ESC),
@@ -153,6 +158,7 @@ combo_t key_combos[] = {
     [DH_RPRN]    = COMBO(dh_combo, KC_RPRN),
     [JK_LCBR]    = COMBO(jk_combo, KC_LCBR),
     [MW_RCBR]    = COMBO(mw_combo, KC_RCBR),
+    [EUHT_CAPS]  = COMBO(euht_combo, CW_TOGG),
 };
 #endif
 
@@ -160,7 +166,17 @@ smtd_resolution on_smtd_action(uint16_t keycode, smtd_action action, uint8_t tap
     return SMTD_RESOLUTION_UNHANDLED;
 }
 
+void keyboard_post_init_user(void) {
+    // Guarantee a clean, responsive state on every boot.
+    // The Moonlander persists EEPROM in internal flash (wear leveling) and it
+    // survives DFU flashing, so stale/garbage layer or default-layer state can
+    // otherwise make the board boot into a weird, unresponsive layer.
+    layer_clear();
+    default_layer_set((layer_state_t)1 << BASE);
+}
+
 static uint16_t magic_tg_timer = 0;
+static uint16_t hypr_spc_timer = 0;
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     switch (keycode) {
@@ -241,6 +257,38 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 SEND_STRING(SECRET_STRING_2);
             }
             return false;
+        case HYPR_SPC:
+            if (record->event.pressed) {
+                hypr_spc_timer = timer_read();
+                register_mods(MOD_MASK_CSAG); // Hyper = Ctrl+Shift+Alt+Gui
+            } else {
+                unregister_mods(MOD_MASK_CSAG);
+                if (timer_elapsed(hypr_spc_timer) < TAPPING_TERM) {
+                    // Tap: Gui+Space
+                    tap_code16(LGUI(KC_SPC));
+                }
+            }
+            return false;
+        case BRWSR_BK:
+        case BRWSR_FW: {
+            bool is_mac = (detected_host_os() == OS_MACOS || detected_host_os() == OS_IOS);
+            // macOS: Cmd+[ / Cmd+]. Others: Alt+Left / Alt+Right.
+            uint8_t mod = is_mac ? MOD_BIT(KC_LGUI) : MOD_BIT(KC_LALT);
+            uint16_t kc;
+            if (keycode == BRWSR_BK) {
+                kc = is_mac ? KC_LBRC : KC_LEFT;
+            } else {
+                kc = is_mac ? KC_RBRC : KC_RGHT;
+            }
+            if (record->event.pressed) {
+                register_mods(mod);
+                register_code(kc);
+            } else {
+                unregister_code(kc);
+                unregister_mods(mod);
+            }
+            return false;
+        }
     }
     return true;
 }
